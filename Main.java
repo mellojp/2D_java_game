@@ -2,16 +2,16 @@ import javax.swing.JFrame;
 
 public class Main {
     public static void main(String[] args) {
-        JFrame w = new JFrame("Game Window");
-        Game g = new Game();
+        JFrame window = new JFrame("Game Window");
+        Game game = new Game();
 
-        w.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        w.setSize(400,400);
-        w.setResizable(false);
+        window.add(game);
+        window.pack();
 
-        w.add(g);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setResizable(false);
+        window.setVisible(true);
 
-        w.setVisible(true);
-
+        game.startGame(); 
     }
 }
