@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import java.util.Random;
 
 public class Game extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener{
 
@@ -22,16 +23,21 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     private ArrayList<Enemy> enemies;
     private ArrayList<Bullet> bullets;
 
+    public int count;
+
     public final int SCREEN_WIDTH = 800;
     public final int SCREEN_HEIGHT = 800;
+    public final int border_size = 12;
     private Thread gameThread;
-    
+
     /**
      * Construtor da classe Game.
      * Inicializa as entidades do jogo, como o jogador e inimigos.
      * Configura a janela do jogo.
      */
     public Game(){
+
+        this.count = 1;
 
         this.addKeyListener(this);
         this.addMouseListener(this);
@@ -53,12 +59,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
         bullets = new ArrayList<>();
 
 
-        //lógica de adicionar inimigos temporária para testes
-        Enemy e = new Enemy(50, 50);
-        Enemy e2 = new Enemy(700, 700);
-        enemies.add(e);
-        enemies.add(e2);
-
+        spawnEnemies(2*count);
     }
 
     /**
@@ -135,6 +136,34 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
                     break;
                 }
             }
+            if (enemies.size() == 0) {
+                count++;
+                spawnEnemies(2*count);
+            }
+
+        }
+    }
+
+    public void spawnEnemies(int quantity){
+        Random r =  new Random();
+        for (int i = 0; i < quantity; i++){
+            int x_spawn, y_spawn;
+            boolean lateral = r.nextBoolean();
+            if(lateral){
+                boolean side = r.nextBoolean();
+                if(side) x_spawn = r.nextInt(-this.border_size,0);
+                else x_spawn = r.nextInt(SCREEN_WIDTH,SCREEN_WIDTH+this.border_size);
+
+                y_spawn = r.nextInt(0,SCREEN_HEIGHT);
+            }
+            else {
+                boolean ceil = r.nextBoolean();
+                if(ceil) y_spawn = r.nextInt(-this.border_size,0);
+                else y_spawn = r.nextInt(SCREEN_HEIGHT, SCREEN_HEIGHT+this.border_size);
+                
+                x_spawn = r.nextInt(0,SCREEN_WIDTH);
+            }
+            enemies.add(new Enemy(x_spawn,y_spawn));
         }
     }
 
@@ -157,27 +186,19 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
         player.setY_axis(playerY);
 
         enemies.clear();
-
-        //lógica de adicionar inimigos temporária para testes
-        Enemy e = new Enemy(50, 50);
-        Enemy e2 = new Enemy(700, 700);
-        enemies.add(e);
-        enemies.add(e2);;
-        
         bullets.clear();
+
+        count = 1;
+        spawnEnemies(2*count);
 
         if (gameThread == null) {
             startGame();
         }
     }
 
-
     /*
      * Métodos para ouvir as ações do teclado e mouse
      */
-    @Override
-    public void keyTyped(KeyEvent e) {}
-
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
@@ -193,7 +214,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
         if (code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT) {
             player.right = true;
         }
-        if (code == KeyEvent.VK_R || code ==  KeyEvent.VK_SPACE) {
+        if (code == KeyEvent.VK_R) {
             resetGame();
         }
     }
@@ -241,4 +262,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 
     @Override
     public void mouseDragged(MouseEvent e) {}
+
+    @Override
+    public void keyTyped(KeyEvent e) {}
 }
