@@ -1,6 +1,3 @@
-import java.io.IOException;
-import javax.imageio.ImageIO;
-
 public class Enemy extends Entity{
     
     /**
@@ -9,12 +6,7 @@ public class Enemy extends Entity{
      * @param y A posição inicial do inimigo no eixo Y.
      */
     public Enemy(int x, int y){
-        super(x,y,3);
-        try {
-            sprite = ImageIO.read(getClass().getResource("/sprites/enemy.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        super(x,y,3,"/sprites/enemy.png");
     }
 
     /**

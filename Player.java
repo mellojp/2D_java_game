@@ -1,9 +1,11 @@
-import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 
 public class Player extends Entity {
 
     public boolean up, down, left, right;
+    public double angle = 0;
 
     /**
      * Construtor da classe Player.
@@ -11,17 +13,11 @@ public class Player extends Entity {
      * @param y A posição inicial do jogador no eixo Y.
      */
     public Player(int x, int y) {
-        super(x,y,4);
-         try {
-            sprite = ImageIO.read(getClass().getResource("/sprites/player.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        super(x,y,4,"/sprites/player.png");
     }
 
     /**
-     * Atualiza a posição do jogador com base nas teclas pressionadas,
-     * respeitando os limites da tela.
+     * Atualiza a posição do jogador com base nas teclas pressionadas, respeitando os limites da tela.
      * @param max_width A largura máxima da tela.
      * @param max_height A altura máxima da tela.
      */
@@ -42,6 +38,21 @@ public class Player extends Entity {
 
         this.area.x = this.x_axis;
         this.area.y = this.y_axis;
+    }
+
+    /**
+     * Renderiza o sprite do jogador na tela.
+     * @param g O contexto gráfico a ser usado para a renderização.
+     */
+    @Override
+    public void render(Graphics g) {
+        if (sprite != null) {
+            Graphics2D g2d = (Graphics2D) g;
+            AffineTransform old = g2d.getTransform();
+            g2d.rotate(angle, x_axis + width / 2, y_axis + height / 2);
+            g.drawImage(sprite, x_axis, y_axis, width, height, null);
+            g2d.setTransform(old);
+        }
     }
 
 }
