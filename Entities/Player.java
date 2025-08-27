@@ -1,11 +1,8 @@
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+package Entities;
 
 public class Player extends Entity {
 
     public boolean up, down, left, right;
-    public double angle = 0;
     public long lastShot = 0, shotcd= 200;
 
     /**
@@ -44,19 +41,5 @@ public class Player extends Entity {
         this.area.y = this.y_axis;
     }
 
-    /**
-     * Renderiza o sprite do jogador na tela.
-     * @param g O contexto gráfico a ser usado para a renderização.
-     */
-    @Override
-    public void render(Graphics g) {
-        if (sprite != null) {
-            Graphics2D g2d = (Graphics2D) g;
-            AffineTransform old = g2d.getTransform();
-            g2d.rotate(angle, x_axis + width / 2, y_axis + height / 2);
-            g.drawImage(sprite, x_axis, y_axis, width, height, null);
-            g2d.setTransform(old);
-        }
-    }
 
 }

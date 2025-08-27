@@ -1,4 +1,9 @@
+package Entities;
+
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -14,6 +19,7 @@ public class Entity {
 
     protected int speed;
     public BufferedImage sprite;
+    public double angle = 0.0;
 
     /**
      * Construtor da classe Entity.
@@ -80,8 +86,18 @@ public class Entity {
      * @param g O contexto gráfico a ser usado para a renderização.
      */
     public void render(Graphics g) {
-         if (sprite != null) {
+        if (sprite != null) {
+            Graphics2D g2d = (Graphics2D) g;
+            AffineTransform old = g2d.getTransform();
+
+            // Rotaciona o contexto gráfico em torno do centro da entidade
+            g2d.rotate(angle, x_axis + width / 2.0, y_axis + height / 2.0);
+            
+            // Desenha o sprite
             g.drawImage(sprite, x_axis, y_axis, width, height, null);
+            
+            // Restaura a transformação original para não afetar outros desenhos
+            g2d.setTransform(old);
         }
     }
 }

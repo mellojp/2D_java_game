@@ -1,5 +1,9 @@
+package Entities;
+
 public class Enemy extends Entity{
     
+    double hp = 3.0;
+
     /**
      * Construtor da classe Enemy.
      * @param x A posição inicial do inimigo no eixo X.
@@ -8,17 +12,21 @@ public class Enemy extends Entity{
     public Enemy(int x, int y){
         super(x,y,3,"/sprites/enemy.png");
     }
-    double hp = 3.0;
+
     /**
      * Atualiza a posição do inimigo para seguir o jogador.
      * @param p O jogador a ser seguido.
      */
     public void tick(Player p){
+        
         int dx = p.getX_axis() - this.x_axis;
         int dy = p.getY_axis() - this.y_axis;
+        this.angle = Math.atan2(dy, dx);
+
         double dist = Math.hypot(dx, dy);
         double velocityX = (dx / dist);
         double velocityY = (dy / dist);
+
         if(dist > 1){
             this.x_axis += velocityX * speed;
             this.y_axis += velocityY * speed;
@@ -33,16 +41,7 @@ public class Enemy extends Entity{
     }
 
     public boolean checkDeath(){
-        if(hp <= 0.0){
-            return true;
-        }else{
-            return false;
-        }
+        return hp <= 0.0;
     }
-
-
-
-
-
 
 }
