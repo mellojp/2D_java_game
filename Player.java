@@ -6,6 +6,7 @@ public class Player extends Entity {
 
     public boolean up, down, left, right;
     public double angle = 0;
+    public long lastShot = 0, shotcd= 200;
 
     /**
      * Construtor da classe Player.

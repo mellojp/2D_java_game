@@ -8,7 +8,7 @@ public class Enemy extends Entity{
     public Enemy(int x, int y){
         super(x,y,3,"/sprites/enemy.png");
     }
-
+    double hp = 3.0;
     /**
      * Atualiza a posição do inimigo para seguir o jogador.
      * @param p O jogador a ser seguido.
@@ -26,5 +26,23 @@ public class Enemy extends Entity{
         this.area.x = this.x_axis;
         this.area.y = this.y_axis;
     }
+
+    public void onHit(){
+        this.hp = hp - 1;
+
+    }
+
+    public boolean checkDeath(){
+        if(hp <= 0.0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+
+
+
 
 }

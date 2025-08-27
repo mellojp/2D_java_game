@@ -113,7 +113,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
         for (int i = 0; i < enemies.size(); i++) {
             Enemy e = enemies.get(i);
             e.tick(player);
-            if (player.isColliding(e)) {
+            if (player.isColliding(e,0)) {
                 gameThread = null; 
                 break;
             }
@@ -129,20 +129,59 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
             }
             for (int j = 0; j < enemies.size(); j++) {
                 Enemy e = enemies.get(j);
-                if (b.isColliding(e)) {
-                    enemies.remove(j);
+                if (b.isColliding(e,0)) {
+                    e.onHit();
+                    if(e.checkDeath()){
+                        enemies.remove(j);
+                    }
                     bullets.remove(i);
                     i--;
                     break;
                 }
             }
+            }
+        for (int j = 0; j < enemies.size(); j++){     
+            Enemy e1 = enemies.get(j);
+                 for(int k = 0; k < enemies.size(); k++){
+                    if(j==k){
+                        continue;
+                    }
+                    Enemy e2 = enemies.get(k);
+                    if(e1.isColliding(e2,10)){
+                        int dx = e1.getX_axis()- e2.getX_axis();
+                        int dy = e1.getY_axis()- e2.getY_axis();
+                        
+                        
+                        if(Math.abs(dx) > Math.abs(dy)){
+                        if(dx > 0){
+                            e1.setX_axis(e1.getX_axis()+1);
+                            e2.setX_axis(e2.getX_axis()-1);
+                        }else{
+                            e1.setX_axis(e1.getX_axis()-1);
+                            e2.setX_axis(e2.getX_axis()+1);
+                        }
+                        }
+                        else{
+                            if(dy > 0){
+                                e1.setY_axis(e1.getY_axis()+1);
+                                e2.setY_axis(e2.getY_axis()-1);
+                            }else{
+                                e1.setY_axis(e1.getY_axis()-1);
+                                e2.setY_axis(e2.getY_axis()+1);
+                            }
+                        }
+                    }
+                    }
+                    
+                 }
+
             if (enemies.size() == 0) {
                 count++;
                 spawnEnemies(2*count);
             }
 
         }
-    }
+    
 
     public void spawnEnemies(int quantity){
         Random r =  new Random();
@@ -239,7 +278,12 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            bullets.add(new Bullet(player.getX_axis() + 16, player.getY_axis() + 16, e.getX(), e.getY()));
+
+            long crTime = System.currentTimeMillis();
+            if(crTime - player.lastShot >= player.shotcd){
+                bullets.add(new Bullet(player.getX_axis() + 16, player.getY_axis() + 16, e.getX(), e.getY()));
+                player.lastShot = crTime;
+            }
         }
     }
     

@@ -66,9 +66,14 @@ public class Entity {
      * @param other A outra entidade a ser verificada.
      * @return Verdadeiro se houver colisão, falso caso contrário.
      */
-    public boolean isColliding(Entity other) {
-        return this.area.intersects(other.area);
-    }
+    public boolean isColliding(Entity other, int minDist) {
+    Rectangle r1 = new Rectangle(this.x_axis - minDist/2, this.y_axis - minDist/2,
+                                 this.width + minDist, this.height + minDist);
+    Rectangle r2 = new Rectangle(other.x_axis - minDist/2, other.y_axis - minDist/2,
+                                 other.width + minDist, other.height + minDist);
+
+    return r1.intersects(r2);
+}
 
     /**
      * Renderiza o sprite da entidade na tela.
