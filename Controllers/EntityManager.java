@@ -31,9 +31,12 @@ public class EntityManager {
         this.screenHeight = screenHeight;
         this.borderSize = borderSize;
 
-        int playerX = (screenWidth / 2) - 16;
-        int playerY = (screenHeight / 2) - 16;
-        player = new Player(playerX, playerY);
+        player = new Player(0, 0); // Posição temporária
+        int playerX = (screenWidth / 2) - (player.getWidth() / 2); // Usa a largura do sprite do jogador
+        int playerY = (screenHeight / 2) - (player.getHeight() / 2); // Usa a altura do sprite do jogador
+        player.setX_axis(playerX); 
+        player.setY_axis(playerY);
+
         enemies = new ArrayList<>();
         bullets = new ArrayList<>();
 
@@ -134,10 +137,10 @@ public class EntityManager {
         }
 
         // Gera uma nova onda de inimigos se todos forem derrotados
-        if (enemies.isEmpty()) {
-            count++;
-            spawnEnemies(2 * count);
-        }
+        // if (enemies.isEmpty()) {
+        //     count++;
+        //     spawnEnemies(2 * count);
+        // }
     }
 
     /**
@@ -182,8 +185,8 @@ public class EntityManager {
      * Reseta o estado do jogo para o início.
      */
     public void reset() {
-        int playerX = (screenWidth / 2) - 16;
-        int playerY = (screenHeight / 2) - 16;
+        int playerX = (screenWidth / 2) - (player.getWidth() / 2);
+        int playerY = (screenHeight / 2) - (player.getHeight() / 2);
         player.setX_axis(playerX);
         player.setY_axis(playerY);
 

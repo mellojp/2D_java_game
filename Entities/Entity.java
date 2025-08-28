@@ -26,19 +26,25 @@ public class Entity {
      * @param x A posição inicial no eixo X.
      * @param y A posição inicial no eixo Y.
      * @param spd A velocidade da entidade.
+     * @param sprite_path O caminho para o sprite.
      */
     public Entity(int x, int y, int spd, String sprite_path){
         this.x_axis = x;
         this.y_axis = y;
         this.speed = spd;
-        this.width = 32;
-        this.height = 32;
-        this.area = new Rectangle(this.x_axis, this.y_axis, this.width, this.height);
+        
         try {
             sprite = ImageIO.read(getClass().getResource(sprite_path));
+            this.width = sprite.getWidth();
+            this.height = sprite.getHeight();
         } catch (IOException e) {
             e.printStackTrace();
+            this.width = 32;
+            this.height = 32;
         }
+        
+        // Inicializa a área de colisão com as dimensões corretas
+        this.area = new Rectangle(this.x_axis, this.y_axis, this.width, this.height);
     }
 
     public int getX_axis(){
@@ -47,6 +53,14 @@ public class Entity {
 
     public int getY_axis(){
         return this.y_axis;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     /**
@@ -73,13 +87,12 @@ public class Entity {
      * @return Verdadeiro se houver colisão, falso caso contrário.
      */
     public boolean isColliding(Entity other, int minDist) {
-    Rectangle r1 = new Rectangle(this.x_axis - minDist/2, this.y_axis - minDist/2,
-                                 this.width + minDist, this.height + minDist);
-    Rectangle r2 = new Rectangle(other.x_axis - minDist/2, other.y_axis - minDist/2,
-                                 other.width + minDist, other.height + minDist);
-
-    return r1.intersects(r2);
-}
+        Rectangle r1 = new Rectangle(this.x_axis - minDist/2, this.y_axis - minDist/2,
+                                     this.width + minDist, this.height + minDist);
+        Rectangle r2 = new Rectangle(other.x_axis - minDist/2, other.y_axis - minDist/2,
+                                     other.width + minDist, other.height + minDist);
+        return r1.intersects(r2);
+    }
 
     /**
      * Renderiza o sprite da entidade na tela.
