@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 
 import Controllers.EntityManager;
 import Controllers.InputManager;
-import Entities.Enemy;
 
 import java.awt.Font;
 import java.awt.Color;
@@ -114,25 +113,19 @@ public class Game extends JPanel implements Runnable {
                 break;
 
             case PLAYING:
-                // Lógica principal do jogo
-                entityManager.update(inputManager);
 
-                // Verifica a condição de "Game Over"
-                for (Enemy e : entityManager.getEnemies()) {
-                    if (entityManager.getPlayer().isColliding(e, 0)) {
-                        currentState = GameState.END_MENU; // Muda para o menu de fim de jogo
-                        break;
-                    }
-                }
+                entityManager.update(inputManager);
                 
-                // Lógica para pausar (adicionar 'pause' ao InputManager se não existir)
+                if (entityManager.getPlayer().checkDeath()) {
+                    currentState = GameState.END_MENU;
+                }
+
                 if (inputManager.isPauseToggled()) { 
                     currentState = GameState.PAUSE_MENU;
                 }
                 break;
 
             case PAUSE_MENU:
-                // Se o jogador apertar a tecla de pausa novamente, o jogo volta
                 if (inputManager.isPauseToggled()) {
                     currentState = GameState.PLAYING;
                 }
@@ -140,7 +133,7 @@ public class Game extends JPanel implements Runnable {
 
             case END_MENU:
                 // Se o jogador apertar 'R' no menu de fim de jogo, o jogo reseta
-                if (inputManager.reset) {
+                if (inputManager.isResetToggled()) {
                     resetGame();
                     currentState = GameState.PLAYING;
                 }
@@ -171,6 +164,19 @@ public class Game extends JPanel implements Runnable {
             case PLAYING:
                 // Desenha as entidades do jogo
                 entityManager.render(g);
+                // --- HUD: Barra de Vida do Jogador ---
+                // Fundo da barra (vermelho escuro)
+                g.setColor(new Color(80, 0, 0));
+                g.fillRect(10, 10, 202, 22);
+
+                // Vida atual (verde)
+                g.setColor(Color.GREEN);
+                double healthRatio = entityManager.getPlayer().currentHp / entityManager.getPlayer().maxHp;
+                g.fillRect(11, 11, (int)(200 * healthRatio), 20);
+
+                // Borda da barra
+                g.setColor(Color.WHITE);
+                g.drawRect(10, 10, 202, 22);
                 break;
 
             case PAUSE_MENU:

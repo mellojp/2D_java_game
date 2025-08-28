@@ -17,6 +17,8 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
 
     private boolean pausedLastFrame = false;
     private boolean pauseToggled = false;
+    private boolean resetLastFrame = false;
+    private boolean resetToggled = false;
 
     private boolean mouseLeftPressed;
     private int mouseX, mouseY;
@@ -35,8 +37,12 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
         boolean isPauseCurrentlyPressed = keys[KeyEvent.VK_P];
         if (isPauseCurrentlyPressed && !pausedLastFrame) pauseToggled = true; 
         else pauseToggled = false;
-
         pausedLastFrame = isPauseCurrentlyPressed;
+
+        boolean isResetCurrentlyPressed = keys[KeyEvent.VK_R];
+        if (isResetCurrentlyPressed && !resetLastFrame) resetToggled = true;
+        else resetToggled = false;
+        resetLastFrame = isResetCurrentlyPressed;
     }
 
     /**
@@ -46,6 +52,9 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
         return pauseToggled;
     }
 
+    public boolean isResetToggled() {
+        return resetToggled;
+    }
 
     /**
      * Verifica se o botão esquerdo do mouse está pressionado.

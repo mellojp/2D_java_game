@@ -5,6 +5,11 @@ public class Player extends Entity {
     public boolean up, down, left, right;
     public long lastShot = 0, shotcd= 200;
 
+    public double maxHp = 10.0;
+    public double currentHp = 10.0;
+    //public double range
+
+
     /**
      * Construtor da classe Player.
      * @param x A posição inicial do jogador no eixo X.
@@ -41,5 +46,11 @@ public class Player extends Entity {
         this.area.y = this.y_axis;
     }
 
+    public void onHit(double damage) {
+        this.currentHp -= damage;
+    }
 
+    public boolean checkDeath(){
+        return currentHp <= 0.0;
+    }
 }

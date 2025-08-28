@@ -1,8 +1,12 @@
 package Entities;
 
+import java.awt.Graphics; 
+import java.awt.Color;  
+
 public class Enemy extends Entity{
     
     double hp = 3.0;
+    double maxHp = 3.0;
 
     /**
      * Construtor da classe Enemy.
@@ -11,6 +15,21 @@ public class Enemy extends Entity{
      */
     public Enemy(int x, int y){
         super(x,y,3,"/sprites/enemy.png");
+    }
+
+    @Override
+    public void render(Graphics g) {
+        super.render(g); // Isso desenha o sprite do inimigo
+
+        // --- Barra de Vida do Inimigo ---
+        // Fundo da barra
+        g.setColor(Color.BLACK);
+        g.fillRect(x_axis, y_axis - 10, width, 5);
+
+        // Vida atual
+        g.setColor(Color.RED);
+        double healthRatio = this.hp / this.maxHp;
+        g.fillRect(x_axis, y_axis - 10, (int)(width * healthRatio), 5);
     }
 
     /**

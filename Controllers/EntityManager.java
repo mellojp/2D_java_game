@@ -45,6 +45,7 @@ public class EntityManager {
      * @param inputManager O gerenciador de entradas para obter as ações do jogador.
      */
     public void update(InputManager inputManager) {
+        
         // Atualiza o estado do jogador com base no input
         player.up = inputManager.up;
         player.down = inputManager.down;
@@ -54,7 +55,7 @@ public class EntityManager {
         // Atualiza o ângulo do jogador para mirar no mouse
         player.angle = Math.atan2(inputManager.getMouseY() - (player.getY_axis() + 16), inputManager.getMouseX() - (player.getX_axis() + 16));
 
-        // Lógica de tiro
+        // Lógica de tiro, considerando o cooldown dos tiros do player
         if (inputManager.isMouseLeftPressed()) {
             long crTime = System.currentTimeMillis();
             if (crTime - player.lastShot >= player.shotcd) {
@@ -69,6 +70,13 @@ public class EntityManager {
         for (int i = 0; i < enemies.size(); i++) {
             Enemy e = enemies.get(i);
             e.tick(player);
+
+            // Se o inimigo colidir com o jogador
+            if (player.isColliding(e, 0)) {
+                player.onHit(1.0); // O jogador perde 1 de vida (ou o valor que preferir)
+                enemies.remove(i); // Remove o inimigo
+                i--; // Ajusta o índice do loop, pois um item foi removido
+            }
         }
 
         // Atualiza projéteis e verifica colisão com inimigos
@@ -181,6 +189,8 @@ public class EntityManager {
 
         enemies.clear();
         bullets.clear();
+
+        player.currentHp = player.maxHp;
 
         count = 1;
         spawnEnemies(2 * count);
