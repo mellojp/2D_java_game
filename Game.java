@@ -19,8 +19,8 @@ import java.awt.Color;
  */
 public class Game extends JPanel implements Runnable {
 
-    public final int SCREEN_WIDTH = 800;
-    public final int SCREEN_HEIGHT = 800;
+    public final int SCREEN_WIDTH = 1280;
+    public final int SCREEN_HEIGHT = 720;
     public final int BORDER_SIZE = 200;
 
     private Thread gameThread;
@@ -126,16 +126,16 @@ public class Game extends JPanel implements Runnable {
                 }
                 
                 // Lógica para pausar (adicionar 'pause' ao InputManager se não existir)
-                // if (inputManager.pause) { 
-                //     currentState = GameState.PAUSE_MENU;
-                // }
+                if (inputManager.isPauseToggled()) { 
+                    currentState = GameState.PAUSE_MENU;
+                }
                 break;
 
             case PAUSE_MENU:
                 // Se o jogador apertar a tecla de pausa novamente, o jogo volta
-                // if (inputManager.pause) {
-                //     currentState = GameState.PLAYING;
-                // }
+                if (inputManager.isPauseToggled()) {
+                    currentState = GameState.PLAYING;
+                }
                 break;
 
             case END_MENU:

@@ -15,6 +15,9 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
     private boolean[] keys = new boolean[256];
     public boolean up, down, left, right, reset;
 
+    private boolean pausedLastFrame = false;
+    private boolean pauseToggled = false;
+
     private boolean mouseLeftPressed;
     private int mouseX, mouseY;
 
@@ -28,7 +31,21 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
         left = keys[KeyEvent.VK_A] || keys[KeyEvent.VK_LEFT];
         right = keys[KeyEvent.VK_D] || keys[KeyEvent.VK_RIGHT];
         reset = keys[KeyEvent.VK_R];
+
+        boolean isPauseCurrentlyPressed = keys[KeyEvent.VK_P];
+        if (isPauseCurrentlyPressed && !pausedLastFrame) pauseToggled = true; 
+        else pauseToggled = false;
+
+        pausedLastFrame = isPauseCurrentlyPressed;
     }
+
+    /**
+     * @return Verdadeiro APENAS no quadro em que a tecla de pausa foi pressionada.
+     */
+    public boolean isPauseToggled() {
+        return pauseToggled;
+    }
+
 
     /**
      * Verifica se o botão esquerdo do mouse está pressionado.
