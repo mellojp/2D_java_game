@@ -6,8 +6,9 @@ import java.awt.geom.AffineTransform;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+
+
+import Sprites.Spritesheet;
 
 public class Entity {
 
@@ -16,10 +17,16 @@ public class Entity {
     protected int width;  
     protected int height; 
     protected Rectangle area; 
+    protected Spritesheet spritesheet;
 
     protected int speed;
-    public BufferedImage sprite;
+    
+    protected BufferedImage[] currAnim;
+    protected int curSprite = 0;
+    protected int curFrames = 0;
+   
     public double angle = 0.0;
+    boolean movement = false;
 
     /**
      * Construtor da classe Entity.
@@ -28,19 +35,19 @@ public class Entity {
      * @param spd A velocidade da entidade.
      * @param sprite_path O caminho para o sprite.
      */
-    public Entity(int x, int y, int spd, String sprite_path){
+    public Entity(int x, int y, int spd, Spritesheet sheet){
         this.x_axis = x;
         this.y_axis = y;
         this.speed = spd;
-        
-        try {
-            sprite = ImageIO.read(getClass().getResource(sprite_path));
-            this.width = sprite.getWidth();
-            this.height = sprite.getHeight();
-        } catch (IOException e) {
-            e.printStackTrace();
-            this.width = 32;
-            this.height = 32;
+        this.spritesheet = sheet;
+
+        if (sheet != null && sheet.getFrames("default") != null && sheet.getFrames("default").length > 0) {
+        BufferedImage firstFrame = sheet.getFrames("default")[0];
+        this.width = firstFrame.getWidth();
+        this.height = firstFrame.getHeight();
+        } else {
+        this.width = 64;  
+        this.height = 64;
         }
         
         // Inicializa a área de colisão com as dimensões corretas
@@ -94,23 +101,57 @@ public class Entity {
         return r1.intersects(r2);
     }
 
+    protected void AnimCycle(BufferedImage[] anim, int targetFrame){
+		if (anim == null || anim.length == 0){
+            return;
+        } 
+        curFrames++;
+		if(curFrames >= targetFrame) {
+			curSprite++;
+			curFrames = 0;
+			if(curSprite == (anim.length)){
+				curSprite = 0;
+			}
+		}
+    }
+
+   protected void updateAnim(BufferedImage[] newAnim) {
+        if (currAnim != newAnim) {
+            currAnim = newAnim;
+            curSprite = 0;
+            curFrames = 0;
+        }
+    }
+    
+
     /**
      * Renderiza o sprite da entidade na tela.
      * @param g O contexto gráfico a ser usado para a renderização.
      */
-    public void render(Graphics g) {
-        if (sprite != null) {
-            Graphics2D g2d = (Graphics2D) g;
-            AffineTransform old = g2d.getTransform();
+   public void render(Graphics g) {
+    if (currAnim == null || currAnim.length == 0) return;
 
-            // Rotaciona o contexto gráfico em torno do centro da entidade
-            g2d.rotate(angle, x_axis + width / 2.0, y_axis + height / 2.0);
-            
-            // Desenha o sprite
-            g.drawImage(sprite, x_axis, y_axis, width, height, null);
-            
-            // Restaura a transformação original para não afetar outros desenhos
-            g2d.setTransform(old);
-        }
+    Graphics2D g2d = (Graphics2D) g;
+    AffineTransform old = g2d.getTransform();
+
+    double centerX = x_axis + width / 2.0;
+    double centerY = y_axis + height / 2.0;
+
+    // Corrige a orientação do sprite para entrar de cabeça pra cima
+    double correctedAngle = angle - Math.PI / 2;
+
+    
+    if (correctedAngle < -Math.PI/2 || correctedAngle > Math.PI/2) {
+        correctedAngle += Math.PI;
+    }
+
+    // Aplica rotação em torno do centro da entidade
+    g2d.rotate(correctedAngle, centerX, centerY);
+
+    // Desenha o sprite
+    g2d.drawImage(currAnim[curSprite], x_axis, y_axis, width, height, null);
+
+    // Restaura transformações originais
+    g2d.setTransform(old);
     }
 }

@@ -7,6 +7,7 @@ import java.util.Random;
 import Entities.Bullet;
 import Entities.Enemy;
 import Entities.Player;
+import Sprites.Spritesheet;
 
 /**
  * Gerencia todas as entidades do jogo, como jogador, inimigos e projéteis.
@@ -14,6 +15,7 @@ import Entities.Player;
  */
 public class EntityManager {
 
+    private Spritesheet sheet;
     private Player player;
     private ArrayList<Enemy> enemies;
     private ArrayList<Bullet> bullets;
@@ -26,12 +28,13 @@ public class EntityManager {
      * @param screenHeight A altura da tela do jogo.
      * @param borderSize O tamanho da borda para o spawn de inimigos.
      */
-    public EntityManager(int screenWidth, int screenHeight, int borderSize) {
+    public EntityManager(int screenWidth, int screenHeight, int borderSize, Spritesheet sheet) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.borderSize = borderSize;
+        this.sheet = sheet;
 
-        player = new Player(0, 0); // Posição temporária
+        player = new Player(0, 0, sheet); // Posição temporária
         int playerX = (screenWidth / 2) - (player.getWidth() / 2); // Usa a largura do sprite do jogador
         int playerY = (screenHeight / 2) - (player.getHeight() / 2); // Usa a altura do sprite do jogador
         player.setX_axis(playerX); 
@@ -56,13 +59,33 @@ public class EntityManager {
         player.right = inputManager.right;
 
         // Atualiza o ângulo do jogador para mirar no mouse
-        player.angle = Math.atan2(inputManager.getMouseY() - (player.getY_axis() + 16), inputManager.getMouseX() - (player.getX_axis() + 16));
+        double rawAngle = Math.atan2(inputManager.getMouseY() - (player.getY_axis() + 16), inputManager.getMouseX() - (player.getX_axis() + 16));
+        double maxRotation = 3*Math.PI/4;
+        double minRotation = Math.PI/4; 
+
+        if(rawAngle > 0){
+            if(rawAngle > maxRotation){
+                rawAngle = maxRotation;
+            }else if(rawAngle < minRotation){
+                rawAngle = minRotation;
+            }
+        } else  if(rawAngle < 0){
+            if(rawAngle < -maxRotation){
+                rawAngle = -maxRotation;
+            }else if(rawAngle > -minRotation){
+                rawAngle = -minRotation;
+            }
+         }     
+         
+         
+        // Ajusta para o render do player (sprite de cabeça para cima)
+        player.angle = rawAngle;
 
         // Lógica de tiro, considerando o cooldown dos tiros do player
         if (inputManager.isMouseLeftPressed()) {
             long crTime = System.currentTimeMillis();
             if (crTime - player.lastShot >= player.shotcd) {
-                bullets.add(new Bullet(player.getX_axis() + 16, player.getY_axis() + 16, inputManager.getMouseX(), inputManager.getMouseY()));
+                bullets.add(new Bullet(player.getX_axis() + 16, player.getY_axis() + 16, inputManager.getMouseX(), inputManager.getMouseY(),sheet));
                 player.lastShot = crTime;
             }
         }
@@ -177,7 +200,7 @@ public class EntityManager {
                 else y_spawn = r.nextInt(screenHeight, screenHeight + this.borderSize);
                 x_spawn = r.nextInt(0, screenWidth);
             }
-            enemies.add(new Enemy(x_spawn, y_spawn));
+            enemies.add(new Enemy(x_spawn, y_spawn,sheet));
         }
     }
 

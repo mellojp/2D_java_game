@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 
 import Controllers.EntityManager;
 import Controllers.InputManager;
+import Sprites.Spritesheet;
 
 import java.awt.Font;
 import java.awt.Color;
@@ -24,6 +25,7 @@ public class Game extends JPanel implements Runnable {
 
     private Thread gameThread;
     private BufferedImage background;
+    private Spritesheet spritesheet;
 
     private InputManager inputManager;
     private EntityManager entityManager;
@@ -39,12 +41,14 @@ public class Game extends JPanel implements Runnable {
      */
     public Game() {
 
+        spritesheet = new Spritesheet("Sprites\\Spritesheet.png");
+
         this.currentState = GameState.START_MENU;
 
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
         inputManager = new InputManager();
-        entityManager = new EntityManager(SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_SIZE);
+        entityManager = new EntityManager(SCREEN_WIDTH, SCREEN_HEIGHT, BORDER_SIZE,spritesheet);
 
         this.addKeyListener(inputManager);
         this.addMouseListener(inputManager);
