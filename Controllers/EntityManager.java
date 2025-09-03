@@ -20,7 +20,20 @@ public class EntityManager {
     private ArrayList<Enemy> enemies;
     private ArrayList<Bullet> bullets;
     private int screenWidth, screenHeight, borderSize;
-    private int count = 1;
+    private int count;
+
+    private long spawnIntInicial; 
+    private long lastSpawnTime = 0;
+    private int maxEnemies; 
+    private Random random = new Random();
+
+    private long StartTime;
+    private int dificuldade;
+    private long difIncrease = 30000;
+    
+    
+
+
 
     /**
      * Construtor da classe EntityManager.
@@ -34,6 +47,11 @@ public class EntityManager {
         this.borderSize = borderSize;
         this.sheet = sheet;
 
+        this.StartTime = System.currentTimeMillis();
+        this.dificuldade = 0;
+        this.maxEnemies = 10;
+        this.spawnIntInicial = 2000;
+
         player = new Player(0, 0, sheet); // Posição temporária
         int playerX = (screenWidth / 2) - (player.getWidth() / 2); // Usa a largura do sprite do jogador
         int playerY = (screenHeight / 2) - (player.getHeight() / 2); // Usa a altura do sprite do jogador
@@ -43,7 +61,7 @@ public class EntityManager {
         enemies = new ArrayList<>();
         bullets = new ArrayList<>();
 
-        spawnEnemies(2 * count);
+        spawnEnemies();
     }
 
     /**
@@ -52,6 +70,7 @@ public class EntityManager {
      */
     public void update(InputManager inputManager) {
         
+        AumentaDiff();
         // Atualiza o estado do jogador com base no input
         player.up = inputManager.up;
         player.down = inputManager.down;
@@ -158,12 +177,8 @@ public class EntityManager {
                 }
             }
         }
+        spawnEnemies();
 
-        // Gera uma nova onda de inimigos se todos forem derrotados
-        // if (enemies.isEmpty()) {
-        //     count++;
-        //     spawnEnemies(2 * count);
-        // }
     }
 
     /**
@@ -180,27 +195,48 @@ public class EntityManager {
         }
     }
 
-    /**
-     * Cria uma nova onda de inimigos em posições aleatórias fora da tela.
-     * @param quantity A quantidade de inimigos a serem criados.
-     */
-    public void spawnEnemies(int quantity) {
-        Random r = new Random();
-        for (int i = 0; i < quantity; i++) {
+   
+    private void AumentaDiff(){
+        if(System.currentTimeMillis() - StartTime >= difIncrease){
+            dificuldade++;
+            this.maxEnemies = maxEnemies + 5*dificuldade;
+            StartTime = System.currentTimeMillis();
+        }
+    }
+
+    private void spawnEnemies() {
+        if (enemies.size() >= maxEnemies) {
+            return;
+        }
+        long spawnInterval = spawnIntInicial - dificuldade*100;
+       
+        long currentTime = System.currentTimeMillis();
+
+       
+        if (currentTime - lastSpawnTime > spawnInterval) {
+            
+            
             int x_spawn, y_spawn;
-            boolean lateral = r.nextBoolean();
+            boolean lateral = random.nextBoolean();
+            
             if (lateral) {
-                boolean side = r.nextBoolean();
-                if (side) x_spawn = r.nextInt(-this.borderSize, 0);
-                else x_spawn = r.nextInt(screenWidth, screenWidth + this.borderSize);
-                y_spawn = r.nextInt(0, screenHeight);
+                
+                boolean side = random.nextBoolean();
+                if (side) x_spawn = random.nextInt(-this.borderSize, 0);
+                else x_spawn = random.nextInt(screenWidth, screenWidth + this.borderSize);
+                y_spawn = random.nextInt(0, screenHeight);
             } else {
-                boolean ceil = r.nextBoolean();
-                if (ceil) y_spawn = r.nextInt(-this.borderSize, 0);
-                else y_spawn = r.nextInt(screenHeight, screenHeight + this.borderSize);
-                x_spawn = r.nextInt(0, screenWidth);
+                
+                boolean ceil = random.nextBoolean();
+                if (ceil) y_spawn = random.nextInt(-this.borderSize, 0);
+                else y_spawn = random.nextInt(screenHeight, screenHeight + this.borderSize);
+                x_spawn = random.nextInt(0, screenWidth);
             }
-            enemies.add(new Enemy(x_spawn, y_spawn,sheet));
+          
+
+            
+            enemies.add(new Enemy(x_spawn, y_spawn, sheet,dificuldade));
+            lastSpawnTime = currentTime;
         }
     }
 
@@ -218,8 +254,12 @@ public class EntityManager {
 
         player.currentHp = player.maxHp;
 
+        this.StartTime = System.currentTimeMillis();
+        this.dificuldade = 0;
+        this.maxEnemies = 10;
+
         count = 1;
-        spawnEnemies(2 * count);
+        spawnEnemies();
     }
 
     /**

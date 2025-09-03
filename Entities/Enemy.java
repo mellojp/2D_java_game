@@ -13,18 +13,22 @@ public class Enemy extends Entity{
     
     public BufferedImage[] front,back;
 
-    double hp = 3.0;
-    double maxHp = 3.0;
+    public double hp = 3.0;
+    public double maxHp = 3.0;
+    public int dificuldade;
 
     /**
      * Construtor da classe Enemy.
      * @param x A posição inicial do inimigo no eixo X.
      * @param y A posição inicial do inimigo no eixo Y.
      */
-    public Enemy(int x, int y, Spritesheet sheet){
+    public Enemy(int x, int y, Spritesheet sheet, int dif){
         super(x,y,3,sheet);
         front = spritesheet.getFrames("enemy_front");
         back = spritesheet.getFrames("enemy_back");
+        this.dificuldade = dif;
+        this.maxHp = maxHp + (2 *dificuldade);
+        this.hp = maxHp;
         currAnim = back;
     }
 
